@@ -11,7 +11,7 @@
 
 %% API
 
--export([generate/6, start/0, run/2, runAsync/2, async/4, mulVProc/4, toMatrix/1, print/1]).
+-export([generate/6, start/0, run/2, run/4, runAsync/2, async/4, mulVProc/4, toMatrix/1, print/1]).
 
 -define(TCP_OPTIONS, [list, {packet, 0}, {active, false}, {reuseaddr, true}]).
 
@@ -43,7 +43,23 @@ loop(Socket) ->
       ok
   end.
 
+rand(Rows, Cols) ->
+  [[random:uniform(10) || _ <- lists:seq(1, Cols)] || _ <- lists:seq(1, Rows)].
+
+run(R1, C1, R2, C2) ->
+  Begin = erlang:system_time(),
+  M1 = rand(R1, C1),
+  M2 = rand(R2, C2),
+  mul(M1, M2),
+  Result = toMatrix(listen(M1, M2, 0, length(M1) * length(lists:nth(1, M2)))),
+  End = erlang:system_time(),
+  io:format("Begin = ~w~n", [Begin]),
+  io:format("End = ~w~n", [End]),
+  Time = round((End - Begin) / 1000),
+  io:format("Time (ms) = ~w~n", [Time]).
+
 run(Socket, [M1, M2]) ->
+  Begin = erlang:system_time(),
   process_flag(trap_exit, true),
   io:format("=====M1=====~n"),
   print(M1),
@@ -53,6 +69,11 @@ run(Socket, [M1, M2]) ->
   mul(M1, M2),
   Result = toMatrix(listen(M1, M2, 0, length(M1) * length(lists:nth(1, M2)))),
   print(Result),
+  End = erlang:system_time(),
+  io:format("Begin = ~w~n", [Begin]),
+  io:format("End = ~w~n", [End]),
+  Time = (End - Begin) / 1000,
+  io:format("Time = ~w~n", [Time]),
   ok = gen_tcp:send(Socket, Result),
   ok = gen_tcp:close(Socket).
 
@@ -93,6 +114,7 @@ mul(M1, M2, Row, Result) ->
   mul(M1, M2, Row + 1, [Result | mulVonM(lists:nth(Row, M1), M2, Row)]).
 
 mulV(V1, V2, R, C) ->
+%%  Value = lists:sum(lists:zipwith(fun(X, Y) -> X * Y end, V1, V2)).
   Pid = spawn(?MODULE, mulVProc, [V1, V2, R, C]),
   erlang:monitor(process, Pid),
   Pid ! {self(), start},
