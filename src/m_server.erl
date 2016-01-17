@@ -51,7 +51,7 @@ run(R1, C1, R2, C2) ->
   M1 = rand(R1, C1),
   M2 = rand(R2, C2),
   mul(M1, M2),
-  listen(M1, M2, 0, length(M1) * length(lists:nth(1, M2))),
+%%  listen(M1, M2, 0, length(M1) * length(lists:nth(1, M2))),
   End = erlang:timestamp(),
   io:format("Begin = ~w~n", [Begin]),
   io:format("End = ~w~n", [End]),
