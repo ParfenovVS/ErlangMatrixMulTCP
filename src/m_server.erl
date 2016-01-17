@@ -116,7 +116,6 @@ mul(M1, M2, Row, Result) ->
 mulV(V1, V2, R, C) ->
 %%  Value = lists:sum(lists:zipwith(fun(X, Y) -> X * Y end, V1, V2)).
   Pid = spawn(?MODULE, mulVProc, [V1, V2, R, C]),
-  erlang:monitor(process, Pid),
   Pid ! {self(), start},
   Pid.
 
