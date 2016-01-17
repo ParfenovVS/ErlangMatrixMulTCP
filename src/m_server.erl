@@ -111,7 +111,8 @@ toMatrix(Result, Row, NumRows, DoubleList) ->
 mul(M1, M2) -> mul(M1, M2, 1, []).
 mul(M1, _M2, Row, Result) when Row =:= length(M1) + 1 -> Result;
 mul(M1, M2, Row, Result) ->
-  mul(M1, M2, Row + 1, [Result | mulVonM(lists:nth(Row, M1), M2, Row)]).
+  RR = [Result | mulVonM(lists:nth(Row, M1), M2, Row)],
+  mul(M1, M2, Row + 1, RR).
 
 mulV(V1, V2, R, C) ->
 %%  Value = lists:sum(lists:zipwith(fun(X, Y) -> X * Y end, V1, V2)).
@@ -135,7 +136,8 @@ getCol(M, Column) ->
 mulVonM(V, M, R) -> mulVonM(V, M, R, 1, []).
 mulVonM(_V, M, _R, Column, Result) when Column =:= length(hd(M)) + 1 -> Result;
 mulVonM(V, M, R, Column, Result) ->
-  mulVonM(V, M, R, Column + 1, [Result | mulV(V, getCol(M, Column), R, Column)]).
+  RR = [Result | mulV(V, getCol(M, Column), R, Column)],
+  mulVonM(V, M, R, Column + 1, RR).
 
 async(Socket, M1, M2, Size) ->
   process_flag(trap_exit, true),
