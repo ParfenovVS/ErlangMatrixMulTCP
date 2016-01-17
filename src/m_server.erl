@@ -48,11 +48,10 @@ rand(Rows, Cols) ->
 
 run(R1, C1, R2, C2) ->
   Begin = erlang:timestamp(),
-  timer:start(),
   M1 = rand(R1, C1),
   M2 = rand(R2, C2),
   mul(M1, M2),
-  Result = toMatrix(listen(M1, M2, 0, length(M1) * length(lists:nth(1, M2)))),
+%%  listen(M1, M2, 0, length(M1) * length(lists:nth(1, M2))),
   End = erlang:timestamp(),
   io:format("Begin = ~w~n", [Begin]),
   io:format("End = ~w~n", [End]),
@@ -115,11 +114,11 @@ mul(M1, M2, Row, Result) ->
   mul(M1, M2, Row + 1, [Result | mulVonM(lists:nth(Row, M1), M2, Row)]).
 
 mulV(V1, V2, R, C) ->
-%%  Value = lists:sum(lists:zipwith(fun(X, Y) -> X * Y end, V1, V2)).
-  Pid = spawn(?MODULE, mulVProc, [V1, V2, R, C]),
-  erlang:monitor(process, Pid),
-  Pid ! {self(), start},
-  Pid.
+  Value = lists:sum(lists:zipwith(fun(X, Y) -> X * Y end, V1, V2)).
+%%  Pid = spawn(?MODULE, mulVProc, [V1, V2, R, C]),
+%%  erlang:monitor(process, Pid),
+%%  Pid ! {self(), start},
+%%  Pid.
 
 mulVProc(V1, V2, R, C) ->
   receive
