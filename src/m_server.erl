@@ -55,7 +55,7 @@ run(R1, C1, R2, C2) ->
   End = erlang:system_time(),
   io:format("Begin = ~w~n", [Begin]),
   io:format("End = ~w~n", [End]),
-  Time = round((End - Begin) / 1000),
+  Time = round((End - Begin) / 1000000),
   io:format("Time (ms) = ~w~n", [Time]).
 
 run(Socket, [M1, M2]) ->
