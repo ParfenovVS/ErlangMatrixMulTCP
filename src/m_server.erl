@@ -47,15 +47,16 @@ rand(Rows, Cols) ->
   [[random:uniform(10) || _ <- lists:seq(1, Cols)] || _ <- lists:seq(1, Rows)].
 
 run(R1, C1, R2, C2) ->
-  Begin = erlang:system_time(),
+  Begin = erlang:timestamp(),
+  timer:start(),
   M1 = rand(R1, C1),
   M2 = rand(R2, C2),
   mul(M1, M2),
   Result = toMatrix(listen(M1, M2, 0, length(M1) * length(lists:nth(1, M2)))),
-  End = erlang:system_time(),
+  End = erlang:timestamp(),
   io:format("Begin = ~w~n", [Begin]),
   io:format("End = ~w~n", [End]),
-  Time = round((End - Begin) / 1000000),
+  Time = round(((element(2, End) * 1000 + element(3, End) / 1000) - (element(2, Begin) * 1000 + element(3, Begin) / 1000))),
   io:format("Time (ms) = ~w~n", [Time]).
 
 run(Socket, [M1, M2]) ->
